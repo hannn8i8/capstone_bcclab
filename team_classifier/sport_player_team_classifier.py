@@ -51,7 +51,8 @@ def box_overlaps_roi(x1, y1, x2, y2):
     # (ROI_X1, ROI_Y1, ROI_X2, ROI_Y2) at all, False if it is fully outside.
     # A box that only touches the ROI border counts as overlapping.
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 3.8a]")
+    outside = (x2 < ROI_X1) or (x1 > ROI_X2) or (y2 < ROI_Y1) or (y1 > ROI_Y2)
+    return not outside
 
 # avoid too small boxes such as rackets
 def test_box_area(x1, y1, x2, y2, threshold = 3000):

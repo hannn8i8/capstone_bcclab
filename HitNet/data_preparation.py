@@ -130,7 +130,8 @@ def process(basedir: str, rally: str, for_train = False):
         # also labelled 1. Watch the array boundaries.
         # ============================================================================
         smooth_hit = np.copy(hit)
-        for i in range(num_frames):
+        n = len(hit)
+        for i in range(n):
             if hit[i] == 1:
                 if i > 0:
                     smooth_hit[i - 1] = 1

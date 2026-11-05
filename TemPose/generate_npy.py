@@ -34,7 +34,13 @@ def compute_bones(kps, bones_idx):
     # Bone vectors: for every (i, j) pair in `bones_idx` compute the vector
     # from joint i to joint j in every frame. kps: (T, J, 2) -> (T, B, 2).
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 3.3a]")
+    bones=[]
+    for i,j in bones_idx:
+        bone_vector = kps[:,j,:] - kps[:,i,:]
+        bones.append(bone_vector)
+
+    return np.stack(bones, axis=1)
+    #raise NotImplementedError("TODO [Ex 3.3a]")
 
 def process_clip(clip_name, tempose_root, court_txt, T_max=30):
     """

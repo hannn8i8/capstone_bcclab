@@ -28,14 +28,14 @@ def normalize_joints(
     # Return (T, J, 2).
     # ============================================================================
     normalized_arr = arr.astype(float).copy()
-    #計算正規化距離
+    #計算正規化距離(對角線)
     if v_height is not None: dist = np.full(len(arr), v_height/4.0)
     else:
         width = bbox[:,2] - bbox[:,0]
         height = bbox[:,3] - bbox[:,1]
         dist = np.sqrt(width**2 + height**2)
     #正規化xy座標
-    for t in range(len(arr)):
+    for t in range(len(arr)): #逐座標判斷
         for j in range(arr.shape[1]):
             if arr[t,j,0] != 0:
                 normalized_arr[t,j,0] = (arr[t,j,0]-bbox[t,0])/dist[t]
@@ -67,7 +67,23 @@ def normalize_position(arr: np.ndarray, court_info: dict):
     # normalise by the court borders so the court spans [0, 1] on both axes:
     #   x -> (x - x_mean) / (border_R - border_L) + 0.5   (same for y with U/D)
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 3.2b]")
+
+    mean_position = np.mean(arr, axis=1, keepdims=True)
+    #找邊界
+    border_L = court_info["border_L"]
+    border_R = court_info["border_R"]
+    border_U = court_info["border_U"]
+    border_D = court_info["border_D"]
+
+    x_mean = (border_L + border_R) / 2
+    y_mean = (border_U + border_D) / 2
+
+    #正規化position
+    mean_position[:,:,0] = ((mean_position[:,:,0] - x_mean)/(border_R-border_L)+0.5)
+    mean_position[:,:,1] = ((mean_position[:,:,1] - y_mean)/(border_D-border_U)+0.5)
+
+    return mean_position
+    #raise NotImplementedError("TODO [Ex 3.2b]")
 
 def get_corner_camera(court_txt):
     with open(court_txt, 'r') as f:

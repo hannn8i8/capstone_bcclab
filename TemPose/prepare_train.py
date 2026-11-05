@@ -141,7 +141,19 @@ def normalize_joints(
     # Same as Ex 3.2a, but the first axis is m players instead of T frames:
     # arr (m, J, 2), bbox (m, 4) -> (m, J, 2).
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 3.2d]")
+
+    from TemPose.utils import normalize_joints as tempose_normalize_joints
+
+    normalized_arr = tempose_normalize_joints(
+        arr,
+        bbox,
+        v_height=v_height,
+        center_align=center_align
+    )
+
+    return normalized_arr
+
+    #raise NotImplementedError("TODO [Ex 3.2d]")
 
 
 def normalize_shuttlecock(arr: np.ndarray, v_width, v_height):

@@ -146,4 +146,13 @@ def to_court_coordinate(
     # Careful with the axes: convert_homogeneous/project work on (2, N) arrays
     # (one COLUMN per point), while arr_camera[i] is (P, 2) (one ROW per point).
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 3.1b]")
+    arr_court = np.zeros(arr_camera.shape, dtype=float)
+    for i in range(len(arr_camera)): #逐影格處理
+        points = arr_camera[i]
+        points = points.T
+        homogeneous_points = convert_homogeneous(points)
+        projected_points = project(H, homogeneous_points)
+        arr_court[i] = projected_points.T
+    return arr_court
+
+    #raise NotImplementedError("TODO [Ex 3.1b]")

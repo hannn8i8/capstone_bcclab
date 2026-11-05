@@ -330,7 +330,13 @@ def calculate_ball_bbox_dist(ball, bbox):
     # Return the SQUARED Euclidean distance between the ball (x, y) and the
     # centre of bbox (x1, y1, x2, y2).
     # =============================================================================
-    raise NotImplementedError("TODO [Ex 3.10a]")
+    x, y = ball
+    x1, y1, x2, y2 = bbox
+
+    cx = (x1 + x2) / 2
+    cy = (y1 + y2) / 2
+
+    return (cx - x) ** 2 + (cy - y) ** 2
 
 def check_court_coordinates(court_coordinates_file):
     def parse_point(line_str):
@@ -355,4 +361,8 @@ def check_court_coordinates(court_coordinates_file):
     #     (TL vs BL, TR vs BR)
     # Equal coordinates are fine. (Remember: image y grows DOWNWARD.)
     # ===========================================================================
-    raise NotImplementedError("TODO [Ex 1.3]")
+    if TL_x > TR_x or BL_x > BR_x:
+        return False
+    if TL_y > BL_y or TR_y > BR_y:
+        return False
+    return True

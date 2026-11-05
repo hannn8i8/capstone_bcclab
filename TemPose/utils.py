@@ -27,7 +27,32 @@ def normalize_joints(
     #     so the bbox centre maps to (0, 0)
     # Return (T, J, 2).
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 3.2a]")
+    normalized_arr = arr.astype(float).copy()
+    #計算正規化距離
+    if v_height is not None: dist = np.full(len(arr), v_height/4.0)
+    else:
+        width = bbox[:,2] - bbox[:,0]
+        height = bbox[:,3] - bbox[:,1]
+        dist = np.sqrt(width**2 + height**2)
+    #正規化xy座標
+    for t in range(len(arr)):
+        for j in range(arr.shape[1]):
+            if arr[t,j,0] != 0:
+                normalized_arr[t,j,0] = (arr[t,j,0]-bbox[t,0])/dist[t]
+            if arr[t,j,1] != 0:
+                normalized_arr[t,j,1] = (arr[t,j,1]-bbox[t,1])/dist[t]
+    #中心化
+    if center_align:
+        center_x = (bbox[:,0] + bbox[:,2])/2
+        center_y = (bbox[:,1] + bbox[:,3])/2
+        for t in range(len(arr)):
+            normalized_center_x = (center_x[t] - bbox[t,0])/dist[t]
+            normalized_center_y = (center_y[t] - bbox[t,1])/dist[t]
+            normalized_arr[t,:,0] -= normalized_center_x
+            normalized_arr[t,:,1] -= normalized_center_y
+
+    return normalized_arr
+    #raise NotImplementedError("TODO [Ex 3.2a]")
 
 def normalize_position(arr: np.ndarray, court_info: dict):
     '''

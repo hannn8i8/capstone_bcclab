@@ -27,7 +27,32 @@ def normalize_joints(
     #     so the bbox centre maps to (0, 0)
     # Return (T, J, 2).
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 3.2a]")
+    normalized_arr = arr.astype(float).copy()
+    #計算正規化距離(對角線)
+    if v_height is not None: dist = np.full(len(arr), v_height/4.0)
+    else:
+        width = bbox[:,2] - bbox[:,0]
+        height = bbox[:,3] - bbox[:,1]
+        dist = np.sqrt(width**2 + height**2)
+    #正規化xy座標
+    for t in range(len(arr)): #逐座標判斷
+        for j in range(arr.shape[1]):
+            if arr[t,j,0] != 0:
+                normalized_arr[t,j,0] = (arr[t,j,0]-bbox[t,0])/dist[t]
+            if arr[t,j,1] != 0:
+                normalized_arr[t,j,1] = (arr[t,j,1]-bbox[t,1])/dist[t]
+    #中心化
+    if center_align:
+        center_x = (bbox[:,0] + bbox[:,2])/2
+        center_y = (bbox[:,1] + bbox[:,3])/2
+        for t in range(len(arr)):
+            normalized_center_x = (center_x[t] - bbox[t,0])/dist[t]
+            normalized_center_y = (center_y[t] - bbox[t,1])/dist[t]
+            normalized_arr[t,:,0] -= normalized_center_x
+            normalized_arr[t,:,1] -= normalized_center_y
+
+    return normalized_arr
+    #raise NotImplementedError("TODO [Ex 3.2a]")
 
 def normalize_position(arr: np.ndarray, court_info: dict):
     '''
@@ -42,7 +67,23 @@ def normalize_position(arr: np.ndarray, court_info: dict):
     # normalise by the court borders so the court spans [0, 1] on both axes:
     #   x -> (x - x_mean) / (border_R - border_L) + 0.5   (same for y with U/D)
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 3.2b]")
+
+    mean_position = np.mean(arr, axis=1, keepdims=True)
+    #找邊界
+    border_L = court_info["border_L"]
+    border_R = court_info["border_R"]
+    border_U = court_info["border_U"]
+    border_D = court_info["border_D"]
+
+    x_mean = (border_L + border_R) / 2
+    y_mean = (border_U + border_D) / 2
+
+    #正規化position
+    mean_position[:,:,0] = ((mean_position[:,:,0] - x_mean)/(border_R-border_L)+0.5)
+    mean_position[:,:,1] = ((mean_position[:,:,1] - y_mean)/(border_D-border_U)+0.5)
+
+    return mean_position
+    #raise NotImplementedError("TODO [Ex 3.2b]")
 
 def get_corner_camera(court_txt):
     with open(court_txt, 'r') as f:
@@ -146,4 +187,13 @@ def to_court_coordinate(
     # Careful with the axes: convert_homogeneous/project work on (2, N) arrays
     # (one COLUMN per point), while arr_camera[i] is (P, 2) (one ROW per point).
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 3.1b]")
+    arr_court = np.zeros(arr_camera.shape, dtype=float)
+    for i in range(len(arr_camera)): #逐影格處理
+        points = arr_camera[i]
+        points = points.T
+        homogeneous_points = convert_homogeneous(points)
+        projected_points = project(H, homogeneous_points)
+        arr_court[i] = projected_points.T
+    return arr_court
+
+    #raise NotImplementedError("TODO [Ex 3.1b]")

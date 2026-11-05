@@ -108,7 +108,21 @@ def normalize_position(arr: np.ndarray, court_info: dict):
     # there is no averaging: normalise by the court borders so the court
     # spans [0, 1] and return (2, N).
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 3.2c]")
+    border_L = court_info["border_L"]
+    border_R = court_info["border_R"]
+    border_U = court_info["border_U"]
+    border_D = court_info["border_D"]
+
+    x_mean = (border_L + border_R) / 2
+    y_mean = (border_U + border_D) / 2
+
+    normalized_arr = arr.astype(float).copy()
+
+
+    normalized_arr[0,:] = ((arr[0,:] - x_mean)/(border_R-border_L)+0.5)
+    normalized_arr[1,:] = ((arr[1,:] - y_mean)/(border_D-border_U)+0.5)
+    return normalized_arr
+    #raise NotImplementedError("TODO [Ex 3.2c]")
 
 
 def normalize_joints(
@@ -127,7 +141,19 @@ def normalize_joints(
     # Same as Ex 3.2a, but the first axis is m players instead of T frames:
     # arr (m, J, 2), bbox (m, 4) -> (m, J, 2).
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 3.2d]")
+
+    from TemPose.utils import normalize_joints as tempose_normalize_joints
+
+    normalized_arr = tempose_normalize_joints(
+        arr,
+        bbox,
+        v_height=v_height,
+        center_align=center_align
+    )
+
+    return normalized_arr
+
+    #raise NotImplementedError("TODO [Ex 3.2d]")
 
 
 def normalize_shuttlecock(arr: np.ndarray, v_width, v_height):

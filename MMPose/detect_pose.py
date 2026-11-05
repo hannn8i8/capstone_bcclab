@@ -26,7 +26,17 @@ def normalize_joints(
     # Same function as TemPose/prepare_train.py normalize_joints (Ex 3.2d).
     # Only used by the commented-out demos below; implement it or import yours.
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 3.2d]")
+    from TemPose.utils import normalize_joints as tempose_normalize_joints
+    #預設center align為false
+    normalized_arr = tempose_normalize_joints(
+        arr,
+        bbox,
+        v_height=v_height,
+        center_align=center_align
+    )
+
+    return normalized_arr
+    #raise NotImplementedError("TODO [Ex 3.2d]")
 
 '''
 

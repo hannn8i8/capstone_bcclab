@@ -29,7 +29,35 @@ def determine_cut_points(
     #   * Disarm the trigger whenever you record a point.
     #   * If you end with an odd number of points, close the last rally with len(a).
     # ===========================================================================
-    raise NotImplementedError("TODO [Ex 1.1]")
+    points = []
+    looking_for_start = True
+    trigger = False
+
+    for i in range(3, len(a) - 3):
+        # Special case: if i == 3 and a[i] >= th the video starts mid-rally
+        if i == 3 and a[i] >= th:
+            points.append(i)
+            looking_for_start = False
+            continue
+
+        if looking_for_start:
+            if np.mean(a[i:i+3]) - np.mean(a[i-3:i]) >= steep_th:
+                trigger = True
+            if trigger and a[i] >= th:
+                points.append(i)
+                looking_for_start = False
+                trigger = False
+        else:
+            if np.mean(a[i-2:i+1]) - np.mean(a[i+1:i+4]) >= steep_th:
+                trigger = True
+            if trigger and a[i+1] <= th:
+                points.append(i)
+                looking_for_start = True
+                trigger = False
+    if len(points) % 2 == 1:
+        points.append(len(a))
+
+    return np.array(points)
 
 # According to the cut points, we can extract the clips and save them as separate files
 def video_clipping(video_path, name, fps=30):

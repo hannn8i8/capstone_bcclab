@@ -129,7 +129,14 @@ def process(basedir: str, rally: str, for_train = False):
         # a copy of `hit` where the frames right before and after every hit are
         # also labelled 1. Watch the array boundaries.
         # ============================================================================
-        raise NotImplementedError("TODO [Ex 2.1a]")
+        smooth_hit = np.copy(hit)
+        n = len(hit)
+        for i in range(n):
+            if hit[i] == 1:
+                if i > 0:
+                    smooth_hit[i - 1] = 1
+                if i < num_frames - 1:
+                    smooth_hit[i + 1] = 1
 
     def get_padded_window(arr, t):
         # ============================== TODO [Ex 2.1b] ==============================
@@ -138,7 +145,9 @@ def process(basedir: str, rally: str, for_train = False):
         # row of `arr` (at the start of the clip) or the last row (at the end), so
         # the length is always window_size.
         # ============================================================================
-        raise NotImplementedError("TODO [Ex 2.1b]")
+        idx = np.arange(t - half, t + half + 1)
+        idx = np.clip(idx, 0, len(arr) - 1)
+        return arr[idx]
 
     for t in range(num_frames):
         # ============================== TODO [Ex 2.1c] ==============================
@@ -146,7 +155,13 @@ def process(basedir: str, rally: str, for_train = False):
         #   [shuttle X, shuttle Y | bottom player pose | top player pose]
         # Use get_padded_window on trajectory.X, trajectory.Y, bottom_player, top_player.
         # ============================================================================
-        raise NotImplementedError("TODO [Ex 2.1c]")
+        x = np.column_stack([
+            get_padded_window(trajectory.X, t),
+            get_padded_window(trajectory.Y, t),
+            get_padded_window(bottom_player, t),
+            get_padded_window(top_player, t)
+        ])
+
         x_list.append(x)
 
         if for_train:                    

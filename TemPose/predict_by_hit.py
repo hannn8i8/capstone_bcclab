@@ -13,7 +13,13 @@ def slice_and_pad(arr, center, T):
     # left, zero-pad at the END so the result always has shape
     # (T, *arr.shape[1:]) and the same dtype as `arr`.
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 2.5a]")
+    start = max(0,center-T//2)
+    end = min(len(arr), center + T//2)
+    sliced = arr[start:end]
+    result = np.zeros((T, *arr.shape[1:]), dtype=arr.dtype)
+    result[:len(sliced)] = sliced
+    return result
+    #raise NotImplementedError("TODO [Ex 2.5a]")
 
 def per_hit_predict(model, clip_dir: Path, hit_csv: Path, cfg: dict, device: torch.device):
     hp  = torch.from_numpy(np.load(clip_dir/"JnB_bone.npy")).float().to(device)   # (1, T, 2, J+B, 2)

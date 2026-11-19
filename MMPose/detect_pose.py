@@ -247,8 +247,21 @@ def is_inside_court(foot_positions, court_polygon, threshold=15):
     # A player is "inside" if EITHER heel is inside the court polygon or within
     # `threshold` pixels of it. Hint: cv2.pointPolygonTest(polygon, pt, True)
     # returns a signed distance (positive inside, negative outside).
+    for foot in foot_positions:
+        point = (float(foot[0]), float(foot[1]))
+
+        distance = cv2.pointPolygonTest(
+            court_polygon,
+            point,
+            True
+        )
+
+        if distance >= -threshold:
+            return True
+
+    return False
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 1.7a]")
+    #raise NotImplementedError("TODO [Ex 1.7a]")
 
 def visualize_video_estimated(inferencer, in_path, csv_output_dir='pose_data.csv', cap=None, court_corners=None, start_frame_number = 0, draw = False):
     in_path = str(in_path)
@@ -315,8 +328,15 @@ def visualize_video_estimated(inferencer, in_path, csv_output_dir='pose_data.csv
         # Filter out non-players (umpires, line judges, audience): keep only the
         # entries of `players` that are inside the court (use is_inside_court).
         # Store the result in `players_inside_court`.
+        players_inside_court = []
+
+        for player in players:
+            foot_positions = player['foot_position']
+
+            if is_inside_court(foot_positions, court_corners):
+                players_inside_court.append(player)
         # ============================================================================
-        raise NotImplementedError("TODO [Ex 1.7b]")
+        #raise NotImplementedError("TODO [Ex 1.7b]")
 
         # fill the frame with empty keypoints if less than 2 players
         if len(players_inside_court) < 2:
@@ -334,8 +354,18 @@ def visualize_video_estimated(inferencer, in_path, csv_output_dir='pose_data.csv
         # sort the players by heel y-coordinate (see "foot_position"), LARGEST first.
         # The first one is the bottom player (closest to the camera), the second one
         # is the top player.
+        players_inside_court.sort(
+            key=lambda player: (
+                player['foot_position'][0][1]
+                + player['foot_position'][1][1]
+            ) / 2,
+            reverse=True
+        )
+
+        bottom_player = players_inside_court[0]
+        top_player = players_inside_court[1]
         # ============================================================================
-        raise NotImplementedError("TODO [Ex 1.7c]")
+        #raise NotImplementedError("TODO [Ex 1.7c]")
 
         # save keypoints
         bottom_player_data.append({'frame': frame_idx, 'keypoints': bottom_player['keypoints']})

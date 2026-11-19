@@ -102,8 +102,22 @@ def process_clip(clip_name, tempose_root, court_txt, T_max=30):
     #   for each player concatenate joints and COCO_BONES bone vectors along the
     #   joint axis -> (T, J+B, 2); stack [top, bottom] on a new axis 1; add a
     #   leading batch dimension.
+
+    # Step 1: Compute bone vectors for each player
+    top_bones = compute_bones(top, COCO_BONES)
+    bottom_bones = compute_bones(bottom, COCO_BONES)
+
+    # Step 2: Combine joints and bones for each player
+    top_pose = np.concatenate([top, top_bones], axis=1)
+    bottom_pose = np.concatenate([bottom, bottom_bones], axis=1)
+
+    # Step 3: Combine the two players
+    human_pose = np.stack([top_pose, bottom_pose], axis=1)
+
+    # Step 4: Add the batch dimension
+    human_pose = np.expand_dims(human_pose, axis=0)
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 3.3b]")
+    #raise NotImplementedError("TODO [Ex 3.3b]")
     pos        = np.expand_dims(pos, axis=0)
     shuttle    = ball_xy[None, ...]
     # videos_len = np.array([n])

@@ -414,7 +414,12 @@ def get_frame_unit(frame_list, num_frame):
         #     (frame 0's three channels first, then frame 1's, ...)
         # Return a float numpy array (the caller divides it by 255 in place).
         # ============================================================================
-        raise NotImplementedError("TODO [Ex 1.5a]")
+        frames = []
+        for img in frame_list:
+            img = cv2.resize(img, (WIDTH, HEIGHT))
+            img = np.moveaxis(img, -1, 0)
+            frames.append(img)
+        return np.concatenate(frames, axis=0).astype(np.float32)
     
     # Form a mini batch of input sequence
     for i in range(0, len(frame_list), num_frame):
@@ -442,7 +447,12 @@ def get_object_center(heatmap):
     #     (the first one on ties) and return its centre as ints:
     #     (int(x + w / 2), int(y + h / 2)).
     # ============================================================================
-    raise NotImplementedError("TODO [Ex 1.5b]")
+    if np.amax(heatmap) == 0:
+        return 0, 0
+    contours, _ = cv2.findContours(heatmap, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    rects = [cv2.boundingRect(c) for c in contours]
+    x, y, w, h = max(rects, key=lambda r: r[2] * r[3])
+    return int(x + w / 2), int(y + h / 2)
 
 def get_pred_type(cx_pred, cy_pred, cx, cy, tolerance):
     """ Get the result type of the prediction.
